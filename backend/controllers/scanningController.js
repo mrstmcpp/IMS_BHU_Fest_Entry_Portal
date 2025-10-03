@@ -45,3 +45,24 @@ export const processScan = async (req, res) => {
 
 
 
+export const createNewPass = async (req , res) => {
+    const { elixirPassId, name, department, batch } = req.body;
+
+    if (!elixirPassId || !name || !department || !batch) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+    try {
+        const existingItem = await Item.findOne({ elixirPassId });
+        if (existingItem) {
+            return res.status(409).json({ message: 'Elixir Pass ID already exists' });
+        }
+        const qrCodeData = "https://quickchart.io/qr?text=" + encodeURIComponent(elixirPassId);
+
+        const newItem = await Item.create({ name , department , batch , elixirPassId });
+        res.status(201).json({ message: 'New Elixir Pass created successfully', item: newItem , qrCodeData });
+    } catch (error) {
+        console.error("Error creating new Elixir Pass:", error);
+        res.status(500).json({ message: 'Server error during Elixir Pass creation' });
+    }
+
+}

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import LoginPage from './components/LoginPage';
 import ScannerPage from './components/ScannerPage';
 import SearchByIdPage from './components/SearchByIdPage';
+import CreateNewPass from './components/CreateNewPass';
 
 function App() {
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
@@ -34,6 +35,11 @@ function App() {
                 <Route
                     path="/search"
                     element={authToken ? <SearchByIdPage token={authToken} onLogout={handleLogout} /> : <Navigate to="/login" />}
+                />
+
+                <Route
+                    path="/secretPassCreation"
+                    element={authToken ? <CreateNewPass token={authToken} onLogout={handleLogout} /> : <Navigate to="/login" />}
                 />
 
                 {/* Default route */}

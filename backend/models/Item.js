@@ -20,7 +20,7 @@ const itemSchema = new mongoose.Schema({
     lastScannedAt: {
         type: Date,
     }
-}, { timestamps: true });
+},);
 
 const Item = mongoose.model('Item', itemSchema);
 
