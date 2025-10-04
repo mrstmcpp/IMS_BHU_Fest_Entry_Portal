@@ -5,7 +5,6 @@ import Footer from "../reusables/Footer";
 import Header from "../reusables/Header";
 import { Link } from "react-router-dom";
 
-const API_URL = "http://localhost:5000/api";
 
 const ScannerPage = ({ token, onLogout }) => {
   const [scanResult, setScanResult] = useState(null);
@@ -63,7 +62,7 @@ const ScannerPage = ({ token, onLogout }) => {
       };
 
       const response = await axios.post(
-        `${API_URL}/scan`,
+        `${import.meta.env.VITE_BACKEND_URL}/scan`,
         { elixirPassId: qrCodeId },
         config
       );

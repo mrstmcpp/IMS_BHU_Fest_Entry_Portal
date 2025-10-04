@@ -3,7 +3,6 @@ import axios from 'axios';
 import Header from '../reusables/Header';
 import Footer from '../reusables/Footer';
 
-const API_URL = 'http://localhost:5000/api';
 
 const LoginPage = ({ onLoginSuccess }) => {
     const [username, setUsername] = useState('');
@@ -17,7 +16,7 @@ const LoginPage = ({ onLoginSuccess }) => {
         setError('');
 
         try {
-            const response = await axios.post(`${API_URL}/auth/login`, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
                 username,
                 password,
             });

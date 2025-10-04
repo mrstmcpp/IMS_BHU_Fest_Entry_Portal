@@ -3,8 +3,6 @@ import axios from "axios";
 import Header from "../reusables/Header";
 import Footer from "../reusables/Footer";
 
-const API_URL = "http://localhost:5000/api";
-
 const CreateNewPass = ({ token, onLogout }) => {
   const [formData, setFormData] = useState({
     elixirPassId: "",
@@ -41,7 +39,7 @@ const CreateNewPass = ({ token, onLogout }) => {
       };
 
       const response = await axios.post(
-        `${API_URL}/scan/create`,
+        `${import.meta.env.VITE_BACKEND_URL}/scan/create`,
         formData,
         config
       );

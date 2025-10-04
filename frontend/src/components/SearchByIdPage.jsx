@@ -5,7 +5,6 @@ import Footer from "../reusables/Footer";
 import { Link } from "react-router-dom";
 
 
-const API_URL = "http://localhost:5000/api";
 
 const SearchByIdPage = ({ token, onLogout }) => {
   const [elixirId, setElixirId] = useState("");
@@ -31,7 +30,7 @@ const SearchByIdPage = ({ token, onLogout }) => {
       };
 
       const response = await axios.post(
-        `${API_URL}/scan`,
+        `${import.meta.env.VITE_BACKEND_URL}/scan`,
         { elixirPassId: elixirId },
         config
       );
