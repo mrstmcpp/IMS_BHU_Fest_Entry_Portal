@@ -30,7 +30,7 @@ const ScannerPage = ({ token, onLogout }) => {
 
   }, []);
 
-  // ✅ Start scanner
+
   const startScanner = async () => {
     const containerId = "qr-reader";
     const container = document.getElementById(containerId);
@@ -48,7 +48,10 @@ const ScannerPage = ({ token, onLogout }) => {
         return;
       }
 
-      const cameraId = cameras[0].id;
+      let cameraId = cameras[1].id; // Use the second camera if available
+      if (!cameraId) {
+        cameraId = cameras[1].id;
+      }
 
       await html5QrCode.start(
         { deviceId: { exact: cameraId } },
