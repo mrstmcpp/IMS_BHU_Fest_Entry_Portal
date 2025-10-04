@@ -60,7 +60,7 @@ const SearchByIdPage = ({ token, onLogout }) => {
         <Header />
 
         <h2 className="text-2xl font-bold text-gray-900">
-          Search by Elixir Pass ID
+          Scan by Elixir Pass ID
         </h2>
         <p className="mt-1 text-sm text-gray-600">
           Enter the Elixir Pass ID to get attendee details
@@ -78,7 +78,7 @@ const SearchByIdPage = ({ token, onLogout }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-teal-600 border border-transparent rounded-md shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400 cursor-pointer"
+            className="w-full px-4 py-2 text-sm  font-medium text-white bg-teal-600 border border-transparent rounded-md shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400 cursor-pointer"
           >
             {isLoading ? "Searching..." : "Search"}
           </button>
@@ -93,7 +93,7 @@ const SearchByIdPage = ({ token, onLogout }) => {
                 <p>{searchError}</p>
                 <button
                   onClick={startNewSearch}
-                  className="mt-3 px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-md hover:bg-rose-700"
+                  className="mt-3 px-4 py-2 text-sm font-medium cursor-pointer text-white bg-rose-600 rounded-md hover:bg-rose-700"
                 >
                   Try Again
                 </button>
@@ -143,9 +143,9 @@ const SearchByIdPage = ({ token, onLogout }) => {
               </div>
               <button
                 onClick={startNewSearch}
-                className="mt-4 px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700"
+                className="mt-4 px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md cursor-pointer hover:bg-teal-700"
               >
-                Search Another ID
+                Scan Another ID
               </button>
             </div>
           )}
@@ -159,7 +159,7 @@ const SearchByIdPage = ({ token, onLogout }) => {
             className="w-full px-4 py-2 text-sm font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400 cursor-pointer"
           >
             <Link to={"/scan"}>
-            Search By QR
+            Scan By QR
             </Link>
           </button>
         </div>

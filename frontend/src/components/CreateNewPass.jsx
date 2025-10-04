@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import Header from "../reusables/Header";
 import Footer from "../reusables/Footer";
+import { useNavigate } from "react-router-dom";
 
 const CreateNewPass = ({ token, onLogout }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     elixirPassId: "",
     name: "",
@@ -107,12 +109,18 @@ const CreateNewPass = ({ token, onLogout }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700 disabled:bg-teal-400"
+            className="w-full px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700 disabled:bg-teal-400 cursor-pointer"
           >
             {isLoading ? "Creating..." : "Create Pass"}
           </button>
         </form>
 
+        <button
+          onClick={() => navigate("/mrstm")}
+          className="mb-4 px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700 cursor-pointer"
+        >
+          ← Back to Admin Panel
+        </button>
         {message && (
           <div className="mt-4 p-4 text-green-800 bg-green-100 border border-green-200 rounded-lg">
             <p>{message}</p>

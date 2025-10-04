@@ -1,73 +1,165 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './components/LoginPage';
-import ScannerPage from './components/ScannerPage';
-import SearchByIdPage from './components/SearchByIdPage';
-import CreateNewPass from './components/CreateNewPass';
-import AnalyticsPage from './components/AnalyticsPage';
-import SecretRegister from './components/SecretRegister';
+import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import LoginPage from "./components/LoginPage";
+import ScannerPage from "./components/ScannerPage";
+import SearchByIdPage from "./components/SearchByIdPage";
+import CreateNewPass from "./components/CreateNewPass";
+import AnalyticsPage from "./components/AnalyticsPage";
+import SecretRegister from "./components/SecretRegister";
+import SecretPage from "./components/SecretPage";
+import AdminRoute from "./admin/AdminWrapper";
+import FreeEntryPage from "./components/FreeEntryPage";
+import FreeMultiplePage from "./components/FreeMultiplePage";
+import FreeAllPage from "./components/FreeAllPage"; 
+
 
 function App() {
-    const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
+  const [authToken, setAuthToken] = useState(localStorage.getItem("authToken"));
 
-    const handleLogin = (token) => {
-        localStorage.setItem('authToken', token);
-        setAuthToken(token);
-    };
+  const [isAdmin, setIsAdmin] = useState(JSON.parse(localStorage.getItem('isAdmin')) || false);
 
-    const handleLogout = () => {
-        localStorage.removeItem('authToken');
-        setAuthToken(null);
-    };
+const handleLogin = (data) => {
+    localStorage.setItem('authToken', data.token);
+    localStorage.setItem('isAdmin', JSON.stringify(data.isAdmin));
+    setAuthToken(data.token);
+    setIsAdmin(data.isAdmin);
+};
 
-    return (
-        <Router>
-            <Routes>
-                {/* Public route */}
-                <Route
-                    path="/login"
-                    element={authToken ? <Navigate to="/scan" /> : <LoginPage onLoginSuccess={handleLogin} />}
-                />
+const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('isAdmin');
+    setAuthToken(null);
+    setIsAdmin(false);
+};
 
-                <Route
-                    path="/mrstm/secret-register"
-                    element={<SecretRegister />}
-                />
 
-                {/* Protected routes */}
-                <Route
-                    path="/scan"
-                    element={authToken ? <ScannerPage token={authToken} onLogout={handleLogout} /> : <Navigate to="/login" />}
-                />
-                <Route
-                    path="/search"
-                    element={authToken ? <SearchByIdPage token={authToken} onLogout={handleLogout} /> : <Navigate to="/login" />}
-                />
+  return (
+    <Router>
+      <Routes>
+        {/* Public route */}
+        <Route
+          path="/login"
+          element={
+            authToken ? (
+              <Navigate to="/scan" />
+            ) : (
+              <LoginPage onLoginSuccess={handleLogin} />
+            )
+          }
+        />
 
-                <Route
-                    path="/secretPassCreation"
-                    element={authToken ? <CreateNewPass token={authToken} onLogout={handleLogout} /> : <Navigate to="/login" />}
-                />
+        {/* Protected routes */}
+        <Route
+          path="/scan"
+          element={
+            authToken ? (
+              <ScannerPage token={authToken} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        {/*admin routes start */}
+        <Route
+          path="/mrstm"
+          element={
+            <AdminRoute token={authToken} isAdmin={isAdmin}>
+              <SecretPage token={authToken} onLogout={handleLogout} />
+            </AdminRoute>
+          }
+        />
 
-                <Route
-                    path="/analytics"
-                    element={authToken ? <AnalyticsPage token={authToken} onLogout={handleLogout} /> : <Navigate to="/login" />}
-                />
+        <Route
+          path="/mrstm/secret-register"
+          element={
+            <AdminRoute token={authToken} isAdmin={isAdmin}>
+              <SecretRegister token={authToken} onLogout={handleLogout} />
+            </AdminRoute>
+          }
+        />
 
-                {/* Default route */}
-                <Route
-                    path="/"
-                    element={<Navigate to={authToken ? "/scan" : "/login"} />}
-                />
+        <Route
+          path="/mrstm/free-entry"
+          element={
+            <AdminRoute token={authToken} isAdmin={isAdmin}>
+              <FreeEntryPage token={authToken} onLogout={handleLogout} />
+            </AdminRoute>
+          }
+        />
 
-                {/* Catch all */}
-                <Route
-                    path="*"
-                    element={<Navigate to={authToken ? "/scan" : "/login"} />}
-                />
-            </Routes>
-        </Router>
-    );
+        <Route
+          path="/mrstm/free-multiple-entries"
+          element={
+            <AdminRoute token={authToken} isAdmin={isAdmin}>
+              <FreeMultiplePage token={authToken} onLogout={handleLogout} />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/mrstm/free-all-entries"
+          element={
+            <AdminRoute token={authToken} isAdmin={isAdmin}>
+              <FreeAllPage token={authToken} onLogout={handleLogout} />
+            </AdminRoute>
+          }
+        />
+
+
+        {/*secret routes end */}
+
+        <Route
+          path="/search"
+          element={
+            authToken ? (
+              <SearchByIdPage token={authToken} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/meraj/secret-pass-creation"
+          element={
+            authToken ? (
+              <CreateNewPass token={authToken} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/analytics"
+          element={
+            authToken ? (
+              <AnalyticsPage token={authToken} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* Default route */}
+        <Route
+          path="/"
+          element={<Navigate to={authToken ? "/scan" : "/login"} />}
+        />
+
+        {/* Catch all */}
+        <Route
+          path="*"
+          element={<Navigate to={authToken ? "/scan" : "/login"} />}
+        />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;

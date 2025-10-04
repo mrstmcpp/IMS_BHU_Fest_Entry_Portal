@@ -18,6 +18,7 @@ export const loginUser = async (req, res) => {
                 _id: user._id,
                 username: user.username,
                 token: generateToken(user._id),
+                isAdmin: user.isAdmin,
             });
         } else {
             res.status(401).json({ message: 'Invalid username or password' });

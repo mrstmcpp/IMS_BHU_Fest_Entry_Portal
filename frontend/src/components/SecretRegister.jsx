@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import Header from "../reusables/Header";
 import Footer from "../reusables/Footer";
+import { useNavigate } from "react-router-dom";
 
 const SecretRegister = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -135,7 +137,12 @@ const SecretRegister = () => {
             </button>
           </div>
         </form>
-
+            <button
+          onClick={() => navigate("/mrstm")}
+          className="mb-4 px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700 cursor-pointer"
+        >
+          ← Back to Admin Panel
+        </button>
         {/* Footer */}
         <Footer />
       </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "../reusables/Header";
 import Footer from "../reusables/Footer";
+import { Link } from "react-router-dom";
 
 const AnalyticsPage = ({ token, onLogout }) => {
   const [analytics, setAnalytics] = useState({ count: 0, total: 0 });
@@ -67,7 +68,16 @@ const AnalyticsPage = ({ token, onLogout }) => {
             </div>
           </div>
         )}
-
+        
+         <div>
+          <button
+            className="w-full px-4 py-2 text-sm font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400 cursor-pointer"
+          >
+            <Link to={"/scan"}>
+            Back to scanner
+            </Link>
+          </button>
+        </div>
         <Footer />
       </div>
     </div>

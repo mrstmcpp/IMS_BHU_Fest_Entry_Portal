@@ -3,8 +3,7 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import axios from "axios";
 import Footer from "../reusables/Footer";
 import Header from "../reusables/Header";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 
 const ScannerPage = ({ token, onLogout }) => {
   const [scanResult, setScanResult] = useState(null);
@@ -13,6 +12,8 @@ const ScannerPage = ({ token, onLogout }) => {
   const [extraResult, setExtraResult] = useState(null);
 
   const scannerRef = useRef(null);
+  const navigate = useNavigate();
+  const isAdmin = JSON.parse(localStorage.getItem("isAdmin")) || false;
 
   const initScanner = () => {
     if (scannerRef.current) {
@@ -72,7 +73,6 @@ const ScannerPage = ({ token, onLogout }) => {
         err.response?.data?.message || "An error occurred during the scan.";
       setScanError(message);
       const extra = err.response?.data?.item || null;
-
       setExtraResult(extra);
     } finally {
       setIsLoading(false);
@@ -106,9 +106,7 @@ const ScannerPage = ({ token, onLogout }) => {
         ></div>
 
         <div className="mt-5 text-center">
-          {isLoading && (
-            <p className="text-gray-600">Verifying with server...</p>
-          )}
+          {isLoading && <p className="text-gray-600">Verifying with server...</p>}
 
           {scanError && (
             <div>
@@ -123,11 +121,10 @@ const ScannerPage = ({ token, onLogout }) => {
                 </button>
               </div>
               {extraResult && (
-                <div className="p-4 text-teal-800 bg-teal-100 border border-teal-200 rounded-lg">
+                <div className="p-4 text-teal-800 bg-teal-100 border border-teal-200 rounded-lg mt-2">
                   <div className="text-left">
                     <p>
-                      <strong>Elixir Pass ID:</strong>{" "}
-                      {extraResult.elixirPassId}
+                      <strong>Elixir Pass ID:</strong> {extraResult.elixirPassId}
                     </p>
                     <p>
                       <strong>Name:</strong> {extraResult.name}
@@ -161,42 +158,46 @@ const ScannerPage = ({ token, onLogout }) => {
                   <strong>Batch:</strong> {item.batch}
                 </p>
                 <p>
-                  <strong>Scanned At:</strong>{" "}
-                  {new Date(item.lastScannedAt).toLocaleString()}
+                  <strong>Scanned At:</strong> {new Date(item.lastScannedAt).toLocaleString()}
                 </p>
               </div>
               <button
                 onClick={startScanningAgain}
-                className="mt-4 px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700"
+                className="mt-4 px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700 cursor-pointer"
               >
                 Scan Next Item
               </button>
             </div>
           )}
         </div>
-          <div className="font-extrabold mt-6 text-center text-gray-500">
-            OR
-          </div>
-            <br />
-        <div>
+
+        <div className="font-extrabold mt-6 text-center text-gray-500">OR</div>
+
+        <div className="mt-4 space-y-4">
           <button
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-teal-600 border border-transparent rounded-md shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400 cursor-pointer"
+            className="w-full px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md cursor-pointer hover:bg-teal-700"
+            onClick={() => navigate("/search")}
           >
-            <Link to={"/search"}>
-            Search By Elixir Pass ID
-            </Link>
+            Scan By Elixir Pass ID
           </button>
-        <div className="mt-4">
-          
+
           <button
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-teal-600 border border-transparent rounded-md shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400 cursor-pointer"
-            >
-            <Link to={"/analytics"}>
+            className="w-full px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md cursor-pointer hover:bg-teal-700"
+            onClick={() => navigate("/analytics")}
+          >
             View Analytics
-            </Link>
           </button>
-          </div>
+
+          {isAdmin && (
+            <button
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-300 rounded-md hover:bg-blue-400 cursor-pointer"
+              onClick={() => navigate("/mrstm")}
+            >
+              Go to Admin Panel
+            </button>
+          )}
         </div>
+
         <Footer />
       </div>
     </div>
