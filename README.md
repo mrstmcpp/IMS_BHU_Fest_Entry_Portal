@@ -63,7 +63,7 @@ The application is built as seperate**backend & frontend app** and is configured
 - bcryptjs
 
 **Deployment**
-- Vercel (with monorepo support)
+- Vercel
 
 ---
 
@@ -92,7 +92,7 @@ Before you begin, ensure you have installed:
 
 ### 1. Clone the Repository
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/mrstmcpp/IMS_BHU_Fest_Entry_Portal.git
 cd IMS_BHU_Fest_Entry_Portal
 ```
 
