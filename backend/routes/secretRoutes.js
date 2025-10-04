@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser } from '../controllers/authController.js';
+import { registerUser } from '../controllers/secretController.js';
 
 const router = express.Router();
 
@@ -11,6 +11,6 @@ const router = express.Router();
 // @desc    Auth user & get token
 // @route   POST /api/auth/login
 // @access  Public
-router.post('/login', loginUser);
+router.post('/secretRegister', registerUser);
 
 export default router;

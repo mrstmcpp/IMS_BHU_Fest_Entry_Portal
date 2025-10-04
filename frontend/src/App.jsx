@@ -5,6 +5,7 @@ import ScannerPage from './components/ScannerPage';
 import SearchByIdPage from './components/SearchByIdPage';
 import CreateNewPass from './components/CreateNewPass';
 import AnalyticsPage from './components/AnalyticsPage';
+import SecretRegister from './components/SecretRegister';
 
 function App() {
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
@@ -26,6 +27,11 @@ function App() {
                 <Route
                     path="/login"
                     element={authToken ? <Navigate to="/scan" /> : <LoginPage onLoginSuccess={handleLogin} />}
+                />
+
+                <Route
+                    path="/mrstm/secret-register"
+                    element={<SecretRegister />}
                 />
 
                 {/* Protected routes */}

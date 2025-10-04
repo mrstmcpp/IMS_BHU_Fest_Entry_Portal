@@ -5,6 +5,7 @@ import cors from 'cors';
 
 import authRoutes from './routes/AuthRoutes.js';
 import scanRoutes from './routes/ScanningRoutes.js';
+import secretRoutes from './routes/secretRoutes.js';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.get('/api', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/scan', scanRoutes);
+app.use('/api/mrstm', secretRoutes);
 
 
 const PORT = process.env.PORT || 5000;
