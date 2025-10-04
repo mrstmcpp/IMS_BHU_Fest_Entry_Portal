@@ -66,3 +66,15 @@ export const createNewPass = async (req , res) => {
     }
 
 }
+
+
+export const getScanCount = async (req, res) => {
+    try {
+        const count = await Item.countDocuments({ lastScannedAt: { $ne: null } });
+        const total = await Item.countDocuments();
+        res.status(200).json({ count, total });
+    } catch (error) {
+        console.error('Error getting scan count:', error);
+        res.status(500).json({ message: 'Server error while fetching scan count.' });
+    }
+};

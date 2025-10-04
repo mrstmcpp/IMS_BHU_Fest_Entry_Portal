@@ -4,6 +4,7 @@ import LoginPage from './components/LoginPage';
 import ScannerPage from './components/ScannerPage';
 import SearchByIdPage from './components/SearchByIdPage';
 import CreateNewPass from './components/CreateNewPass';
+import AnalyticsPage from './components/AnalyticsPage';
 
 function App() {
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
@@ -40,6 +41,11 @@ function App() {
                 <Route
                     path="/secretPassCreation"
                     element={authToken ? <CreateNewPass token={authToken} onLogout={handleLogout} /> : <Navigate to="/login" />}
+                />
+
+                <Route
+                    path="/analytics"
+                    element={authToken ? <AnalyticsPage token={authToken} onLogout={handleLogout} /> : <Navigate to="/login" />}
                 />
 
                 {/* Default route */}
