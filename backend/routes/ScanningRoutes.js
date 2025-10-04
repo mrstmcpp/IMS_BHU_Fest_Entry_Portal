@@ -1,6 +1,6 @@
 import express from 'express';
 import { processScan , createNewPass , getScanCount } from '../controllers/scanningController.js';
-import { protect } from '../middlewares/authMiddleware.js';
+import { admin, protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ const router = express.Router();
 // @route   POST /api/scan
 // @access  Private
 router.post('/', protect, processScan);
-router.post('/create', protect, createNewPass);
+router.post('/create', protect, admin, createNewPass);
 router.get('/analytics', protect, getScanCount);
 
 export default router;
