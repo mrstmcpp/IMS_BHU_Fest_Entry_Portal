@@ -88,7 +88,10 @@ const ScannerPage = ({ token, onLogout }) => {
   const item = scanResult?.item;
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="w-full max-w-xl p-6 bg-white rounded-lg shadow-xl flex flex-col">
+      {/* ✅ Header INSIDE the white box */}
+      <Header />
       <div className="w-full max-w-xl p-6 bg-white rounded-lg shadow-xl">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold text-gray-800">Scan QR Code</h1>
@@ -199,6 +202,7 @@ const ScannerPage = ({ token, onLogout }) => {
         </div>
 
         <Footer />
+      </div>
       </div>
     </div>
   );

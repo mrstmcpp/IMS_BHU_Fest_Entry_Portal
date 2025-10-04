@@ -12,6 +12,9 @@ const SecretRegister = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+
+  const token = localStorage.getItem("authToken");
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -24,19 +27,29 @@ const SecretRegister = () => {
     }
 
     try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      
+      // console.log(config)
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/mrstm/secretRegister`,
-        {
-          username,
-          password,
-        }
+        { username, password },
+        config
       );
 
       if (response.data?.success) {
-        setMessage("✅ Account created successfully!");
+        setMessage("Account created successfully!");
         setUsername("");
         setPassword("");
         setConfirmPassword("");
+
+        setTimeout(() => {
+          navigate("/mrstm");
+        }, 1500);
       } else {
         setMessage(response.data?.message || "Registration failed.");
       }
@@ -55,7 +68,9 @@ const SecretRegister = () => {
         {/* Header */}
         <Header />
 
-        <h2 className="text-2xl font-bold text-gray-900">Secret Registration</h2>
+        <h2 className="text-2xl font-bold text-gray-900">
+          Secret Registration
+        </h2>
         <p className="mt-1 text-sm text-gray-600">
           Create a new account (restricted access)
         </p>
@@ -118,9 +133,7 @@ const SecretRegister = () => {
           {message && (
             <p
               className={`text-sm text-center ${
-                message.includes("success")
-                  ? "text-green-600"
-                  : "text-rose-600"
+                message.includes("success") ? "text-green-600" : "text-rose-600"
               }`}
             >
               {message}
@@ -137,12 +150,14 @@ const SecretRegister = () => {
             </button>
           </div>
         </form>
-            <button
+
+        <button
           onClick={() => navigate("/mrstm")}
           className="mb-4 px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700 cursor-pointer"
         >
           ← Back to Admin Panel
         </button>
+
         {/* Footer */}
         <Footer />
       </div>

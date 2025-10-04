@@ -15,7 +15,7 @@ const router = express.Router();
 // @access  Public
 router.post('/secretRegister', protect, admin, registerUser);
 router.post('/freeEntry', protect, admin, freeEntry);
-router.get('/freeAllEntries', protect, admin, freeAllEntries);
+router.post('/freeAllEntries', protect, admin, freeAllEntries);
 router.post('/freeMultipleEntries', protect, admin, freeMultipleEntries);
 
 export default router;

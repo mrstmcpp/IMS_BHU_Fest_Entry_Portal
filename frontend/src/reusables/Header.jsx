@@ -7,6 +7,7 @@ const Header = () => {
                 <h1 className="text-2xl font-bold text-white tracking-wide">
                     IMS Fest Entry Portal
                 </h1>
+                
             </div>
         </header>
     );
