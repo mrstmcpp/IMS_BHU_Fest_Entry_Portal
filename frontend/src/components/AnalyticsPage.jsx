@@ -40,46 +40,53 @@ const AnalyticsPage = ({ token, onLogout }) => {
   }, [token]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-xl text-center">
-        <Header />
+    <div className="min-h-screen flex flex-col bg-gray-50">
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Analytics Overview
-        </h2>
+      <Header onLogout={onLogout} />
 
-        {isLoading ? (
-          <p className="text-blue-600 font-medium">Loading...</p>
-        ) : error ? (
-          <p className="text-red-600 font-medium">{error}</p>
-        ) : (
-          <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-gray-100 shadow">
-              <p className="text-lg font-semibold text-gray-700">Total people inside fest</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {analytics.count}
-              </p>
+
+      <div className="flex-grow flex items-center justify-center">
+        <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-xl text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Analytics Overview
+          </h2>
+
+          {isLoading ? (
+            <p className="text-blue-600 font-medium">Loading...</p>
+          ) : error ? (
+            <p className="text-red-600 font-medium">{error}</p>
+          ) : (
+            <div className="space-y-4">
+              <div className="p-4 rounded-lg bg-gray-100 shadow">
+                <p className="text-lg font-semibold text-gray-700">
+                  Total people inside fest
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {analytics.count}
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-gray-100 shadow">
+                <p className="text-lg font-semibold text-gray-700">
+                  Total Registered
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {analytics.total}
+                </p>
+              </div>
             </div>
-            <div className="p-4 rounded-lg bg-gray-100 shadow">
-              <p className="text-lg font-semibold text-gray-700">Total Registered</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {analytics.total}
-              </p>
-            </div>
-          </div>
-        )}
-        
-         <div>
-          <button
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-teal-400 cursor-pointer"
-          >
-            <Link to={"/scan"}>
-            Back to scanner
+          )}
+
+          <div>
+            <Link to="/scan">
+              <button className="w-full px-4 py-2 cursor-pointer text-sm font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                ← Back to scanner
+              </button>
             </Link>
-          </button>
+          </div>
+      <Footer />
         </div>
-        <Footer />
       </div>
+
     </div>
   );
 };

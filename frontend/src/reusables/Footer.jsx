@@ -3,9 +3,9 @@ import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
     return (
-        <footer className="mt-8 text-center text-sm text-gray-600">
-            <p className="flex items-center justify-center gap-4">
-                Created by<span className="font-semibold">Satyam Prajapati</span>
+        <footer className="mt-8 text-center text-sm text-gray-600 px-4">
+            <p className="flex flex-wrap items-center justify-center gap-4">
+                Created by <span className="font-semibold">Satyam Prajapati</span>
                 <a 
                     href="https://github.com/mrstmcpp" 
                     target="_blank" 

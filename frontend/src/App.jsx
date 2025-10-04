@@ -20,21 +20,25 @@ import FreeAllPage from "./components/FreeAllPage";
 
 function App() {
   const [authToken, setAuthToken] = useState(localStorage.getItem("authToken"));
-
+  const [username, setUsername] = useState(localStorage.getItem('username') || '');
   const [isAdmin, setIsAdmin] = useState(JSON.parse(localStorage.getItem('isAdmin')) || false);
 
 const handleLogin = (data) => {
     localStorage.setItem('authToken', data.token);
+    localStorage.setItem('username', data.username);
     localStorage.setItem('isAdmin', JSON.stringify(data.isAdmin));
     setAuthToken(data.token);
+    setUsername(data.username);
     setIsAdmin(data.isAdmin);
 };
 
 const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('isAdmin');
+    localStorage.removeItem('username');
     setAuthToken(null);
     setIsAdmin(false);
+    setUsername('');
 };
 
 

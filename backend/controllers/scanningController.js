@@ -1,7 +1,7 @@
 import Item from '../models/Item.js';
 
 export const processScan = async (req, res) => {
-    const { elixirPassId } = req.body; 
+    const { elixirPassId } = req.body;
     // console.log("Received scan request for ID:", elixirPassId);
     if (!elixirPassId) {
         return res.status(400).json({ message: 'Elixir Pass ID is required' });
@@ -16,26 +16,36 @@ export const processScan = async (req, res) => {
 
         // Check if it has been scanned before
         if (item.lastScannedAt) {
-            return res.status(409).json({ 
-                message: `This item was already scanned on ${new Date(item.lastScannedAt).toLocaleString()}`,
+            const istTime = new Date(item.lastScannedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+
+            return res.status(409).json({
+                message: `This item was already scanned on ${istTime}`,
                 item: {
                     elixirPassId: item.elixirPassId,
                     name: item.name,
                     department: item.department,
                     batch: item.batch,
-                    
+
                 }
             });
         }
-        
 
-        item.lastScannedAt = new Date();
+
+
+        item.lastScannedAt = new Date(); 
         await item.save();
+
+        // Convert to IST when sending
+        const istTime = new Date(item.lastScannedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
 
         res.status(200).json({
             message: 'Entry successful!, Welcome to the Fest.',
-            item,
+            item: {
+                ...item.toObject(),
+                lastScannedAt: istTime
+            },
         });
+
 
     } catch (error) {
         console.error("Scan processing error:", error);
@@ -45,7 +55,7 @@ export const processScan = async (req, res) => {
 
 
 
-export const createNewPass = async (req , res) => {
+export const createNewPass = async (req, res) => {
     const { elixirPassId, name, department, batch } = req.body;
 
     if (!elixirPassId || !name || !department || !batch) {
@@ -58,8 +68,8 @@ export const createNewPass = async (req , res) => {
         }
         const qrCodeData = "https://quickchart.io/qr?text=" + encodeURIComponent(elixirPassId);
 
-        const newItem = await Item.create({ name , department , batch , elixirPassId });
-        res.status(201).json({ message: 'New Elixir Pass created successfully', item: newItem , qrCodeData });
+        const newItem = await Item.create({ name, department, batch, elixirPassId });
+        res.status(201).json({ message: 'New Elixir Pass created successfully', item: newItem, qrCodeData });
     } catch (error) {
         console.error("Error creating new Elixir Pass:", error);
         res.status(500).json({ message: 'Server error during Elixir Pass creation' });
