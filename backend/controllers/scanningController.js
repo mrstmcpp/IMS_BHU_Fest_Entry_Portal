@@ -16,19 +16,12 @@ export const processScan = async (req, res) => {
 
 
         if (item.isSpecial) {
-            const today = new Date();
-            const validOn = new Date(item.validOn);
+            const todayIST = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+            const validOnIST = new Date(item.validOn).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
 
-
-            const isSameDay =
-                today.getFullYear() === validOn.getFullYear() &&
-                today.getMonth() === validOn.getMonth() &&
-                today.getDate() === validOn.getDate();
-
-            if (!isSameDay) {
-                const validDateIST = validOn.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+            if (todayIST !== validOnIST) {
                 return res.status(403).json({
-                    message: `This special pass is valid only on ${validDateIST}.`,
+                    message: `This special pass is valid only on ${validOnIST}.`,
                     item: {
                         elixirPassId: item.elixirPassId,
                         name: item.name,
@@ -43,7 +36,6 @@ export const processScan = async (req, res) => {
 
         if (item.lastScannedAt) {
             const istTime = new Date(item.lastScannedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
-
             return res.status(409).json({
                 message: item.isSpecial
                     ? `This special pass was already used on ${istTime}.`
@@ -57,6 +49,7 @@ export const processScan = async (req, res) => {
                 },
             });
         }
+
 
         item.lastScannedAt = new Date();
         await item.save();
@@ -82,7 +75,6 @@ export const processScan = async (req, res) => {
 
 
 
-
 export const createNewPass = async (req, res) => {
     const { elixirPassId, name, department, batch, isSpecial, validOn } = req.body;
 
@@ -103,6 +95,7 @@ export const createNewPass = async (req, res) => {
             batch,
         };
 
+
         if (isSpecial) {
             if (!validOn) {
                 return res.status(400).json({ message: 'validOn date is required for special passes' });
@@ -113,11 +106,18 @@ export const createNewPass = async (req, res) => {
                 return res.status(400).json({ message: 'Invalid validOn date format' });
             }
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            validDate.setHours(0, 0, 0, 0);
 
-            if (validDate < today) {
+            const todayIST = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+            const validOnIST = validDate.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+
+
+            const [d, m, y] = todayIST.split('/').map(Number);
+            const todayMidnight = new Date(y, m - 1, d);
+
+            const [vd, vm, vy] = validOnIST.split('/').map(Number);
+            const validOnMidnight = new Date(vy, vm - 1, vd);
+
+            if (validOnMidnight < todayMidnight) {
                 return res.status(400).json({ message: 'Special pass cannot be created for past dates' });
             }
 
@@ -142,6 +142,7 @@ export const createNewPass = async (req, res) => {
         res.status(500).json({ message: 'Server error during Elixir Pass creation' });
     }
 };
+
 
 
 
