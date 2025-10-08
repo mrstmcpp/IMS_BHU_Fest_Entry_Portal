@@ -62,6 +62,7 @@ const CreateNewPass = ({ token, onLogout }) => {
     }
   };
 
+  const today = new Date().toISOString().split("T")[0];
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Header onLogout={onLogout} />
@@ -133,6 +134,7 @@ const CreateNewPass = ({ token, onLogout }) => {
                 name="validOn"
                 value={formData.validOn}
                 onChange={handleChange}
+                min={today}
                 required
                 className="block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm mt-2"
               />
