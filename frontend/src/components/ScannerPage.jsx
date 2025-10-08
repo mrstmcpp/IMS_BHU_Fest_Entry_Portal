@@ -10,56 +10,41 @@ const ScannerPage = ({ token, onLogout }) => {
   const [scanError, setScanError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [extraResult, setExtraResult] = useState(null);
-
   const navigate = useNavigate();
   const isAdmin = JSON.parse(localStorage.getItem("isAdmin")) || false;
-
   const html5QrCodeRef = useRef(null);
   const isMountedRef = useRef(true);
   const scanningGuardRef = useRef(false);
 
-
   useEffect(() => {
     isMountedRef.current = true;
     startScanner();
-
     return () => {
       isMountedRef.current = false;
       stopScanner();
     };
-
   }, []);
-
 
   const startScanner = async () => {
     const containerId = "qr-reader";
     const container = document.getElementById(containerId);
     if (!container) return;
-
     await stopScanner();
-
     const html5QrCode = new Html5Qrcode(containerId);
     html5QrCodeRef.current = html5QrCode;
-
     try {
       const cameras = await Html5Qrcode.getCameras();
       if (!cameras || cameras.length === 0) {
         setScanError("No camera found on this device.");
         return;
       }
-
-      let cameraId = cameras[1].id; // Use the second camera if available
-      if (!cameraId) {
-        cameraId = cameras[1].id;
-      }
-
+      let cameraId = cameras[1]?.id || cameras[0].id;
       await html5QrCode.start(
         { deviceId: { exact: cameraId } },
         { fps: 5, qrbox: { width: 250, height: 250 } },
         (decodedText) => {
           if (scanningGuardRef.current) return;
           scanningGuardRef.current = true;
-
           (async () => {
             try {
               await html5QrCode.stop();
@@ -68,7 +53,6 @@ const ScannerPage = ({ token, onLogout }) => {
               html5QrCode.clear();
             } catch {}
             html5QrCodeRef.current = null;
-
             if (isMountedRef.current) {
               setTimeout(() => handleScan(decodedText), 100);
             }
@@ -82,27 +66,22 @@ const ScannerPage = ({ token, onLogout }) => {
     }
   };
 
-
   const stopScanner = async () => {
     const scanner = html5QrCodeRef.current;
     if (!scanner) return;
-
     try {
       await scanner.stop();
     } catch {}
     try {
       scanner.clear();
     } catch {}
-
     html5QrCodeRef.current = null;
   };
-
 
   const handleScan = async (qrCodeId) => {
     setIsLoading(true);
     setScanResult(null);
     setScanError(null);
-
     try {
       const config = {
         headers: {
@@ -110,13 +89,11 @@ const ScannerPage = ({ token, onLogout }) => {
           Authorization: `Bearer ${token}`,
         },
       };
-
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/scan`,
         { elixirPassId: qrCodeId },
         config
       );
-
       setScanResult(response.data);
     } catch (err) {
       const message =
@@ -129,7 +106,6 @@ const ScannerPage = ({ token, onLogout }) => {
     }
   };
 
-
   const startScanningAgain = async () => {
     scanningGuardRef.current = false;
     setScanResult(null);
@@ -138,9 +114,8 @@ const ScannerPage = ({ token, onLogout }) => {
     await startScanner();
   };
 
-
   const safeNavigate = async (path) => {
-    await stopScanner(); 
+    await stopScanner();
     navigate(path);
   };
 
@@ -148,11 +123,12 @@ const ScannerPage = ({ token, onLogout }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header onLogout={async () => {
-        await stopScanner();
-        onLogout();
-      }} />
-
+      <Header
+        onLogout={async () => {
+          await stopScanner();
+          onLogout();
+        }}
+      />
       <div className="flex-grow flex items-center justify-center">
         <div className="w-full max-w-xl bg-white rounded-lg shadow-xl p-6">
           <div className="flex justify-between items-center mb-4">
@@ -174,7 +150,9 @@ const ScannerPage = ({ token, onLogout }) => {
           ></div>
 
           <div className="mt-5 text-center">
-            {isLoading && <p className="text-gray-600">Verifying with server...</p>}
+            {isLoading && (
+              <p className="text-gray-600">Verifying with server...</p>
+            )}
 
             {scanError && (
               <div>
@@ -191,26 +169,68 @@ const ScannerPage = ({ token, onLogout }) => {
 
                 {extraResult && (
                   <div className="p-4 text-teal-800 bg-teal-100 border border-teal-200 rounded-lg mt-2 text-left">
-                    <p><strong>Elixir Pass ID:</strong> {extraResult.elixirPassId}</p>
-                    <p><strong>Name:</strong> {extraResult.name}</p>
-                    <p><strong>Department:</strong> {extraResult.department}</p>
-                    <p><strong>Batch:</strong> {extraResult.batch}</p>
+                    <p>
+                      <strong>Elixir Pass ID:</strong> {extraResult.elixirPassId}
+                    </p>
+                    <p>
+                      <strong>Name:</strong> {extraResult.name}
+                    </p>
+                    <p>
+                      <strong>Department:</strong> {extraResult.department}
+                    </p>
+                    <p>
+                      <strong>Batch:</strong> {extraResult.batch}
+                    </p>
                   </div>
                 )}
               </div>
             )}
 
             {item && (
-              <div className="p-4 text-teal-800 bg-teal-100 border border-teal-200 rounded-lg text-left">
-                <p className="font-bold text-lg mb-2">{scanResult.message}</p>
-                <p><strong>Elixir Pass ID:</strong> {item.elixirPassId}</p>
-                <p><strong>Name:</strong> {item.name}</p>
-                <p><strong>Department:</strong> {item.department}</p>
-                <p><strong>Batch:</strong> {item.batch}</p>
-                <p><strong>Scanned At:</strong> {new Date(item.lastScannedAt).toLocaleString()}</p>
+              <div
+                className={`p-4 border rounded-lg text-left ${
+                  item.isSpecial
+                    ? "text-yellow-900 bg-yellow-100 border-yellow-300"
+                    : "text-teal-800 bg-teal-100 border-teal-200"
+                }`}
+              >
+                <p
+                  className={`font-bold text-lg mb-2 ${
+                    item.isSpecial ? "text-yellow-800" : "text-teal-800"
+                  }`}
+                >
+                  {item.isSpecial
+                    ? "Special Pass Validated"
+                    : scanResult.message}
+                </p>
+                <p>
+                  <strong>Elixir Pass ID:</strong> {item.elixirPassId}
+                </p>
+                <p>
+                  <strong>Name:</strong> {item.name}
+                </p>
+                <p>
+                  <strong>Department:</strong> {item.department}
+                </p>
+                <p>
+                  <strong>Batch:</strong> {item.batch}
+                </p>
+                <p>
+                  <strong>Scanned At:</strong>{" "}
+                  {new Date(item.lastScannedAt).toLocaleString()}
+                </p>
+                {item.isSpecial && (
+                  <p className="mt-2 font-semibold text-yellow-700">
+                    Special Access Granted for Today!
+                  </p>
+                )}
                 <button
                   onClick={startScanningAgain}
-                  className="mt-4 px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-teal-700 cursor-pointer"
+                  className={`mt-4 px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90 cursor-pointer ${
+                    item.isSpecial
+                      ? "bg-yellow-600 hover:bg-yellow-700"
+                      : "bg-teal-600 hover:bg-teal-700"
+                  }`}
                 >
                   Scan Next Item
                 </button>

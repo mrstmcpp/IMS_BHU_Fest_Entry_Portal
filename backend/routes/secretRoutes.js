@@ -5,14 +5,6 @@ import { admin, protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
-
-
-// @desc    Auth user & get token
-// @route   POST /api/auth/login
-// @access  Public
 router.post('/secretRegister', protect, admin, registerUser);
 router.post('/freeEntry', protect, admin, freeEntry);
 router.post('/freeAllEntries', protect, admin, freeAllEntries);

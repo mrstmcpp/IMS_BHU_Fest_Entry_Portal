@@ -14,11 +14,9 @@ const SearchByIdPage = ({ token, onLogout }) => {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!elixirId) return;
-
     setIsLoading(true);
     setSearchResult(null);
     setSearchError("");
-
     try {
       const config = {
         headers: {
@@ -26,7 +24,6 @@ const SearchByIdPage = ({ token, onLogout }) => {
           Authorization: `Bearer ${token}`,
         },
       };
-
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/scan`,
         { elixirPassId: elixirId },
@@ -54,10 +51,7 @@ const SearchByIdPage = ({ token, onLogout }) => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-
       <Header onLogout={onLogout} />
-
-
       <div className="flex-grow flex items-center justify-center">
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-xl text-center">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -66,8 +60,6 @@ const SearchByIdPage = ({ token, onLogout }) => {
           <p className="mt-1 text-sm text-gray-600">
             Enter the Elixir Pass ID to get attendee details
           </p>
-
-          {/* Search form */}
           <form className="space-y-4 mt-4" onSubmit={handleSearch}>
             <input
               type="text"
@@ -86,7 +78,6 @@ const SearchByIdPage = ({ token, onLogout }) => {
             </button>
           </form>
 
-          {/* Display results */}
           <div className="mt-5 text-center">
             {searchError && (
               <div>
@@ -101,7 +92,13 @@ const SearchByIdPage = ({ token, onLogout }) => {
                   </button>
                 </div>
                 {extraResult && (
-                  <div className="p-4 text-teal-800 bg-teal-100 border border-teal-200 rounded-lg mt-2 text-left">
+                  <div
+                    className={`p-4 border rounded-lg mt-2 text-left ${
+                      extraResult.isSpecial
+                        ? "text-yellow-900 bg-yellow-100 border-yellow-300"
+                        : "text-teal-800 bg-teal-100 border-teal-200"
+                    }`}
+                  >
                     <p>
                       <strong>Elixir Pass ID:</strong> {extraResult.elixirPassId}
                     </p>
@@ -114,14 +111,33 @@ const SearchByIdPage = ({ token, onLogout }) => {
                     <p>
                       <strong>Batch:</strong> {extraResult.batch}
                     </p>
+                    {extraResult.isSpecial && (
+                      <p className="mt-2 font-semibold text-yellow-700">
+                        Special Pass Detected
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
             )}
 
             {item && (
-              <div className="p-4 text-teal-800 bg-teal-100 border border-teal-200 rounded-lg text-left">
-                <p className="font-bold text-lg mb-2">{searchResult.message}</p>
+              <div
+                className={`p-4 border rounded-lg text-left ${
+                  item.isSpecial
+                    ? "text-yellow-900 bg-yellow-100 border-yellow-300"
+                    : "text-teal-800 bg-teal-100 border-teal-200"
+                }`}
+              >
+                <p
+                  className={`font-bold text-lg mb-2 ${
+                    item.isSpecial ? "text-yellow-800" : "text-teal-800"
+                  }`}
+                >
+                  {item.isSpecial
+                    ? "Special Pass Validated"
+                    : searchResult.message}
+                </p>
                 <p>
                   <strong>Elixir Pass ID:</strong> {item.elixirPassId}
                 </p>
@@ -138,9 +154,18 @@ const SearchByIdPage = ({ token, onLogout }) => {
                   <strong>Last Scanned At:</strong>{" "}
                   {new Date(item.lastScannedAt).toLocaleString()}
                 </p>
+                {item.isSpecial && (
+                  <p className="mt-2 font-semibold text-yellow-700">
+                    Special Access Granted for Today!
+                  </p>
+                )}
                 <button
                   onClick={startNewSearch}
-                  className="mt-4 px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md cursor-pointer hover:bg-teal-700"
+                  className={`mt-4 px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90 cursor-pointer ${
+                    item.isSpecial
+                      ? "bg-yellow-600 hover:bg-yellow-700"
+                      : "bg-teal-600 hover:bg-teal-700"
+                  }`}
                 >
                   Scan Another ID
                 </button>
@@ -148,9 +173,7 @@ const SearchByIdPage = ({ token, onLogout }) => {
             )}
           </div>
 
-          {/* OR Section */}
           <div className="font-extrabold mt-6 text-center text-gray-500">OR</div>
-
           <div>
             <Link to="/scan">
               <button className="w-full px-4 py-2 text-sm font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 cursor-pointer">
@@ -158,10 +181,9 @@ const SearchByIdPage = ({ token, onLogout }) => {
               </button>
             </Link>
           </div>
-      <Footer />
+          <Footer />
         </div>
       </div>
-
     </div>
   );
 };

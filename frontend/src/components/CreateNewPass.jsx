@@ -11,6 +11,8 @@ const CreateNewPass = ({ token, onLogout }) => {
     name: "",
     department: "",
     batch: "",
+    isSpecial: false,
+    validOn: "",
   });
 
   const [message, setMessage] = useState("");
@@ -19,9 +21,10 @@ const CreateNewPass = ({ token, onLogout }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
@@ -40,9 +43,12 @@ const CreateNewPass = ({ token, onLogout }) => {
         },
       };
 
+      const payload = { ...formData };
+      if (!formData.isSpecial) delete payload.validOn;
+
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/scan/create`,
-        formData,
+        payload,
         config
       );
       setMessage(response.data.message);
@@ -107,6 +113,31 @@ const CreateNewPass = ({ token, onLogout }) => {
               className="block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
             />
 
+            <div className="flex items-center space-x-2 mt-2">
+              <input
+                type="checkbox"
+                name="isSpecial"
+                checked={formData.isSpecial}
+                onChange={handleChange}
+                id="isSpecial"
+                className="h-4 w-4"
+              />
+              <label htmlFor="isSpecial" className="text-sm text-gray-700">
+                Mark as Special Pass
+              </label>
+            </div>
+
+            {formData.isSpecial && (
+              <input
+                type="date"
+                name="validOn"
+                value={formData.validOn}
+                onChange={handleChange}
+                required
+                className="block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm mt-2"
+              />
+            )}
+
             <button
               type="submit"
               disabled={isLoading}
@@ -142,7 +173,6 @@ const CreateNewPass = ({ token, onLogout }) => {
                 alt="QR Code"
                 className="mx-auto mt-2 border rounded-lg"
               />
-
               <a
                 href={qrCode}
                 download={`ElixirPass-${formData.elixirPassId || "QRCode"}.png`}

@@ -19,6 +19,13 @@ const itemSchema = new mongoose.Schema({
     },
     lastScannedAt: {
         type: Date,
+    },
+    isSpecial:{
+        type: Boolean,
+        default: false
+    },
+    validOn:{
+        type: Date,
     }
 },);
 
