@@ -43,6 +43,21 @@ The application is built as seperate**backend & frontend app** and is configured
 
 ---
 
+## Screenshots
+
+<div align="center">
+  <img src="docs/screenshots/1-portrait.webp" alt="Screenshot 1" width="300"/>
+  <img src="docs/screenshots/2-portrait.webp" alt="Screenshot 2" width="300"/>
+  <img src="docs/screenshots/3-portrait.webp" alt="Screenshot 3" width="300"/>
+  <img src="docs/screenshots/4-portrait.webp" alt="Screenshot 4" width="300"/>
+  <img src="docs/screenshots/5-portrait.webp" alt="Screenshot 5" width="300"/>
+  <img src="docs/screenshots/6-portrait.webp" alt="Screenshot 6" width="300"/>
+  <img src="docs/screenshots/7-portrait.webp" alt="Screenshot 7" width="300"/>
+  <img src="docs/screenshots/8-portrait.webp" alt="Screenshot 8" width="300"/>
+</div>
+
+---
+
 ## Tech Stack
 
 **Frontend**
