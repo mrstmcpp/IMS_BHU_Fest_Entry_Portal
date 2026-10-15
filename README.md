@@ -136,8 +136,12 @@ VITE_BACKEND_URL=https://YOUR-BACKEND-URL.COM/api
 ```
 
 ### 4. Database Seeding (Required)
-- Add at least **one user** in the `users` collection.  
-  - Hash the password using bcrypt (online generator) or temporarily log it in `authController.js`.
+- Set `SEED_ADMIN_USERNAME` and `SEED_ADMIN_PASSWORD` in `backend/.env`, then run:
+  ```bash
+  cd backend
+  npm run seed:admin
+  ```
+  The command is safe to run more than once; an existing user with that username is left unchanged.
 
 - Add some **items** in the `items` collection with this structure:
 
