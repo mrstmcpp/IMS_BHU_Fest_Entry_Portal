@@ -5,15 +5,14 @@ const Footer = () => {
     return (
         <footer className="mt-8 text-center text-sm text-gray-600 px-4">
             <p className="flex flex-wrap items-center justify-center gap-4">
-                Created by <span className="font-semibold">Satyam Prajapati</span>
-                <a 
-                    href="https://github.com/mrstmcpp" 
+                Created by <span className="font-semibold">
+                    <a 
+                    href="https://mrstm.in" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-teal-600 hover:text-teal-800 flex items-center gap-1"
-                >
-                    <FaGithub /> GitHub
-                </a>
+                >Satyam Prajapati</a>
+                </span>
                 <a 
                     href="https://www.linkedin.com/in/mrstmcpp" 
                     target="_blank" 
