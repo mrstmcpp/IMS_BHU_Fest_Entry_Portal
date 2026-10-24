@@ -1,3 +1,4 @@
+import dns from 'dns';
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -9,6 +10,11 @@ import scanRoutes from './routes/ScanningRoutes.js';
 import secretRoutes from './routes/secretRoutes.js';
 
 dotenv.config();
+
+// Optional override for machines where Node can't resolve Atlas SRV records (e.g. DNS_SERVERS=8.8.8.8,1.1.1.1)
+if (process.env.DNS_SERVERS) {
+  dns.setServers(process.env.DNS_SERVERS.split(',').map((server) => server.trim()));
+}
 
 const app = express();
 app.use(express.json());

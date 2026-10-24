@@ -1,6 +1,11 @@
 import 'dotenv/config';
+import dns from 'dns';
 import mongoose from 'mongoose';
 import User from '../models/User.js';
+
+if (process.env.DNS_SERVERS) {
+    dns.setServers(process.env.DNS_SERVERS.split(',').map((server) => server.trim()));
+}
 
 const username = process.env.SEED_ADMIN_USERNAME;
 const password = process.env.SEED_ADMIN_PASSWORD;
