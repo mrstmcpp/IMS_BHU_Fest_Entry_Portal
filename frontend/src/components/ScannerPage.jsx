@@ -217,7 +217,7 @@ const ScannerPage = ({ token, onLogout }) => {
                 </p>
                 <p>
                   <strong>Scanned At:</strong>{" "}
-                  {new Date(item.lastScannedAt).toLocaleString()}
+                  {new Date(item.lastScannedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}
                 </p>
                 {item.isSpecial && (
                   <p className="mt-2 font-semibold text-yellow-700">

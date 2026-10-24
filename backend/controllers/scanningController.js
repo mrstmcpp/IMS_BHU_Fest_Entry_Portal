@@ -61,10 +61,7 @@ export const processScan = async (req, res) => {
 
         res.status(200).json({
             message,
-            item: {
-                ...item.toObject(),
-                lastScannedAt: istTime,
-            },
+            item: item.toObject(),
         });
 
     } catch (error) {
