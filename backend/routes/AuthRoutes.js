@@ -1,5 +1,6 @@
 import express from 'express';
-import { loginUser } from '../controllers/authController.js';
+import { loginUser, getMe, updatePreferences, heartbeat } from '../controllers/authController.js';
+import { protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -12,5 +13,9 @@ const router = express.Router();
 // @route   POST /api/auth/login
 // @access  Public
 router.post('/login', loginUser);
+
+router.get('/me', protect, getMe);
+router.put('/preferences', protect, updatePreferences);
+router.post('/heartbeat', protect, heartbeat);
 
 export default router;

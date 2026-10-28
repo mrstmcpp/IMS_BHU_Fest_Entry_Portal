@@ -20,6 +20,10 @@ const itemSchema = new mongoose.Schema({
     lastScannedAt: {
         type: Date,
     },
+    scannedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     isSpecial:{
         type: Boolean,
         default: false

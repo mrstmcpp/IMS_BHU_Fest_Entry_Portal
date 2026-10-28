@@ -1,4 +1,29 @@
 import Item from '../models/Item.js';
+import ScanLog from '../models/ScanLog.js';
+
+// Exact match first; then the normalized form (uppercase, no spaces) so typed IDs like "pedia 1" find PEDIA1
+const findPass = async (rawId) => {
+    const id = String(rawId).trim();
+    const item = await Item.findOne({ elixirPassId: id }).populate('scannedBy', 'username');
+    if (item) return item;
+    const normalized = id.replace(/\s+/g, '').toUpperCase();
+    return normalized === id ? null : Item.findOne({ elixirPassId: normalized }).populate('scannedBy', 'username');
+};
+
+// A failed log write must never block someone's entry
+const logScan = async (req, elixirPassId, result, item) => {
+    try {
+        await ScanLog.create({
+            user: req.user._id,
+            username: req.user.username,
+            elixirPassId,
+            name: item?.name,
+            result,
+        });
+    } catch (error) {
+        console.error('Error writing scan log:', error);
+    }
+};
 
 export const processScan = async (req, res) => {
     const { elixirPassId } = req.body;
@@ -8,9 +33,10 @@ export const processScan = async (req, res) => {
     }
 
     try {
-        const item = await Item.findOne({ elixirPassId });
+        const item = await findPass(elixirPassId);
 
         if (!item) {
+            await logScan(req, String(elixirPassId).trim(), 'not_found');
             return res.status(404).json({ message: `Item with ID "${elixirPassId}" not found.` });
         }
 
@@ -20,6 +46,7 @@ export const processScan = async (req, res) => {
             const validOnIST = new Date(item.validOn).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
 
             if (todayIST !== validOnIST) {
+                await logScan(req, item.elixirPassId, 'wrong_day', item);
                 return res.status(403).json({
                     message: `This special pass is valid only on ${validOnIST}.`,
                     item: {
@@ -36,23 +63,29 @@ export const processScan = async (req, res) => {
 
         if (item.lastScannedAt) {
             const istTime = new Date(item.lastScannedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+            const scannedBy = item.scannedBy?.username;
+            const by = scannedBy ? ` by ${scannedBy}` : '';
+            await logScan(req, item.elixirPassId, 'already_scanned', item);
             return res.status(409).json({
                 message: item.isSpecial
-                    ? `This special pass was already used on ${istTime}.`
-                    : `This item was already scanned on ${istTime}.`,
+                    ? `This special pass was already used on ${istTime}${by}.`
+                    : `This item was already scanned on ${istTime}${by}.`,
                 item: {
                     elixirPassId: item.elixirPassId,
                     name: item.name,
                     department: item.department,
                     batch: item.batch,
                     isSpecial: item.isSpecial,
+                    lastScannedAt: item.lastScannedAt,
+                    scannedBy,
                 },
             });
         }
 
 
         item.lastScannedAt = new Date();
-        await item.save();
+        item.scannedBy = req.user._id;
+        await Promise.all([item.save(), logScan(req, item.elixirPassId, 'entered', item)]);
 
         const istTime = new Date(item.lastScannedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
         const message = item.isSpecial
@@ -61,7 +94,7 @@ export const processScan = async (req, res) => {
 
         res.status(200).json({
             message,
-            item: item.toObject(),
+            item: { ...item.toObject(), scannedBy: req.user.username },
         });
 
     } catch (error) {
@@ -146,9 +179,23 @@ export const createNewPass = async (req, res) => {
 
 export const getScanCount = async (req, res) => {
     try {
-        const count = await Item.countDocuments({ lastScannedAt: { $ne: null } });
-        const total = await Item.countDocuments();
-        res.status(200).json({ count, total });
+        const [count, total, departments, enteredLastHour] = await Promise.all([
+            Item.countDocuments({ lastScannedAt: { $ne: null } }),
+            Item.countDocuments(),
+            Item.aggregate([
+                {
+                    $group: {
+                        _id: '$department',
+                        total: { $sum: 1 },
+                        inside: { $sum: { $cond: [{ $ifNull: ['$lastScannedAt', false] }, 1, 0] } },
+                    },
+                },
+                { $sort: { total: -1 } },
+            ]),
+            ScanLog.countDocuments({ result: 'entered', createdAt: { $gte: new Date(Date.now() - 60 * 60 * 1000) } }),
+        ]);
+        const byDepartment = departments.map((d) => ({ department: d._id || 'Unknown', total: d.total, inside: d.inside }));
+        res.status(200).json({ count, total, enteredLastHour, byDepartment });
     } catch (error) {
         console.error('Error getting scan count:', error);
         res.status(500).json({ message: 'Server error while fetching scan count.' });
@@ -185,6 +232,7 @@ export const freeEntry = async (req, res) => {
 
         // Reset scan
         item.lastScannedAt = null;
+        item.scannedBy = null;
         await item.save();
 
         res.status(200).json({
@@ -216,7 +264,7 @@ export const freeAllEntries = async (req, res) => {
     try {
         const result = await Item.updateMany(
             { lastScannedAt: { $ne: null } },
-            { $set: { lastScannedAt: null } }
+            { $set: { lastScannedAt: null, scannedBy: null } }
         );
 
         res.status(200).json({
@@ -240,7 +288,7 @@ export const freeMultipleEntries = async (req, res) => {
     try {
         const result = await Item.updateMany(
             { elixirPassId: { $in: elixirPassIds }, lastScannedAt: { $ne: null } },
-            { $set: { lastScannedAt: null } }
+            { $set: { lastScannedAt: null, scannedBy: null } }
         );
 
         if (result.modifiedCount === 0) {
