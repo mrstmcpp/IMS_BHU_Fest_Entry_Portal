@@ -10,6 +10,7 @@ const SecretPage = ({ token, onLogout }) => {
     { title: "Search By Elixir ID", path: "/search" },
     { title: "Scan By QR", path: "/scan" },
     { title: "Analytics (Scan Count)", path: "/analytics" },
+    { title: "Active Users & Scan Stats", path: "/mrstm/active-users" },
     { title: "Free One Entry", path: "/mrstm/free-entry" },
     { title: "Free Multiple Entries", path: "/mrstm/free-multiple-entries" },
     {

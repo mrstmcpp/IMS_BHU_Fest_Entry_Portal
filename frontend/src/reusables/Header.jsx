@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import logo from "/logo.png";
 
 const Header = ({ onLogout }) => {
@@ -27,6 +28,12 @@ const Header = ({ onLogout }) => {
             <span className="text-white font-medium truncate max-w-xs">
               👤 {username}
             </span>
+            <Link
+              to="/settings"
+              className="bg-white text-teal-600 px-3 py-1 rounded hover:bg-gray-100 transition cursor-pointer"
+            >
+              ⚙️ Settings
+            </Link>
             <button
               onClick={onLogout}
               className="bg-white text-teal-600 px-3 py-1 rounded hover:bg-gray-100 transition cursor-pointer"
