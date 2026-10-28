@@ -11,6 +11,8 @@ const SecretPage = ({ token, onLogout }) => {
     { title: "Scan By QR", path: "/scan" },
     { title: "Analytics (Scan Count)", path: "/analytics" },
     { title: "Active Users & Scan Stats", path: "/mrstm/active-users" },
+    { title: "Download All Passes (Excel + QR)", path: "/mrstm/passes" },
+    { title: "Import Passes (Excel / CSV)", path: "/mrstm/passes/import" },
     { title: "Free One Entry", path: "/mrstm/free-entry" },
     { title: "Free Multiple Entries", path: "/mrstm/free-multiple-entries" },
     {

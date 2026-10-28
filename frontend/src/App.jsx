@@ -19,6 +19,7 @@ import FreeMultiplePage from "./components/FreeMultiplePage";
 import FreeAllPage from "./components/FreeAllPage";
 import SettingsPage from "./components/SettingsPage";
 import ActiveUsersPage from "./components/ActiveUsersPage";
+import PassTransferPage from "./components/PassTransferPage";
 import ChooseVersionPage from "./shared/ChooseVersionPage";
 import { startActivityTracking } from "./shared/activity";
 import V2Layout from "./v2/Layout";
@@ -30,6 +31,7 @@ import AddScannerV2 from "./v2/AddScannerV2";
 import CreatePassV2 from "./v2/CreatePassV2";
 import ResetEntriesV2 from "./v2/ResetEntriesV2";
 import SettingsV2 from "./v2/SettingsV2";
+import PassesV2 from "./v2/PassesV2";
 
 const API = import.meta.env.VITE_BACKEND_URL;
 
@@ -169,6 +171,8 @@ const handleLogout = useCallback(() => {
       <Route path="/mrstm/free-entry" element={adminOnly(<ResetEntriesV2 focus="one" />)} />
       <Route path="/mrstm/free-multiple-entries" element={adminOnly(<ResetEntriesV2 focus="multiple" />)} />
       <Route path="/mrstm/free-all-entries" element={adminOnly(<ResetEntriesV2 focus="all" />)} />
+      <Route path="/mrstm/passes" element={adminOnly(<PassesV2 />)} />
+      <Route path="/mrstm/passes/import" element={adminOnly(<PassesV2 focus="import" />)} />
     </Route>
   );
 
@@ -238,6 +242,12 @@ const handleLogout = useCallback(() => {
               <ActiveUsersPage token={authToken} onLogout={handleLogout} />
             </AdminRoute>
           }
+        />
+
+        <Route path="/mrstm/passes" element={adminOnly(<PassTransferPage onLogout={handleLogout} />)} />
+        <Route
+          path="/mrstm/passes/import"
+          element={adminOnly(<PassTransferPage onLogout={handleLogout} focus="import" />)}
         />
 
 

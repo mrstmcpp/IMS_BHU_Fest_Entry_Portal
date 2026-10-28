@@ -17,6 +17,8 @@ if (process.env.DNS_SERVERS) {
 }
 
 const app = express();
+// Pass imports send up to 5,000 rows in one request (Vercel caps bodies at 4.5 MB); other routes keep the 100 kB default
+app.use('/api/mrstm/passes/import', express.json({ limit: '4mb' }));
 app.use(express.json());
 app.use(cors());
 

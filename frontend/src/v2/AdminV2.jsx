@@ -4,6 +4,8 @@ import {
   LuActivity,
   LuChevronRight,
   LuDoorOpen,
+  LuFileDown,
+  LuFileUp,
   LuRefreshCw,
   LuRotateCcw,
   LuScanLine,
@@ -27,6 +29,8 @@ const RESULT_BADGES = {
 const ACTIONS = [
   { to: "/meraj/secret-pass-creation", title: "Create pass", desc: "New or special pass with QR", icon: LuTicket },
   { to: "/mrstm/secret-register", title: "Add scanner", desc: "Create a scanner account", icon: LuUserPlus },
+  { to: "/mrstm/passes/import", title: "Import passes", desc: "Many at once from Excel or CSV", icon: LuFileUp },
+  { to: "/mrstm/passes", title: "Download all", desc: "Excel with every pass + QR", icon: LuFileDown },
   { to: "/mrstm/free-entry", title: "Reset entries", desc: "Let someone back in", icon: LuRotateCcw },
   { to: "/scan", title: "Open scanner", desc: "Scan or type a pass ID", icon: LuScanLine },
 ];
@@ -163,7 +167,7 @@ const AdminV2 = ({ section }) => {
             <StatCard label="Let in today" value={summary.todayEntered} hint={`${summary.todayScans} scans today`} icon={LuScanLine} accent="amber" />
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
             {ACTIONS.map((a) => (
               <Link
                 key={a.to}
