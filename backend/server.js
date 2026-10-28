@@ -17,6 +17,8 @@ if (process.env.DNS_SERVERS) {
 }
 
 const app = express();
+// Vercel puts the real client IP in X-Forwarded-For; without this the rate limiter can't tell users apart
+app.set('trust proxy', 1);
 // Pass imports send up to 5,000 rows in one request (Vercel caps bodies at 4.5 MB); other routes keep the 100 kB default
 app.use('/api/mrstm/passes/import', express.json({ limit: '4mb' }));
 app.use(express.json());
@@ -38,9 +40,38 @@ const apiLimiter = rateLimit({
 
 app.use('/api', apiLimiter);
 
-mongoose.connect(process.env.MONGO_URI)
+// "Could not connect to any servers" hides the real cause; list each host's error (DNS, timeout, closed...)
+const describeDbError = (err) => {
+  const servers = err.reason?.servers ? [...err.reason.servers.entries()] : [];
+  const details = servers.map(([host, server]) => `${host}: ${server.error?.message || server.type}`);
+  return details.length ? `${err.message}\nPer host: ${details.join(' | ')}` : err.message;
+};
+
+// A failed first attempt is retried on the next request, instead of leaving this server instance
+// without a database until Vercel replaces it
+let dbConnection = null;
+const connectDB = () => {
+  dbConnection ??= mongoose
+    .connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 10000 })
     .then(() => console.log('MongoDB connected successfully'))
-    .catch((err) => console.error('MongoDB connection error:', err));
+    .catch((err) => {
+      dbConnection = null;
+      console.error('MongoDB connection error:', describeDbError(err));
+      throw err;
+    });
+  return dbConnection;
+};
+connectDB().catch(() => {});
+
+app.use('/api', async (req, res, next) => {
+  if (mongoose.connection.readyState === 1) return next();
+  try {
+    await connectDB();
+    next();
+  } catch {
+    res.status(503).json({ message: "Can't reach the database right now. Please try again in a minute." });
+  }
+});
 
 app.get('/api', (req, res) => {
   res.send('API is running...');
