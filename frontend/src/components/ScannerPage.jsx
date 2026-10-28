@@ -13,6 +13,7 @@ const ScannerPage = ({ token, onLogout }) => {
   const navigate = useNavigate();
   const isAdmin = JSON.parse(localStorage.getItem("isAdmin")) || false;
   const html5QrCodeRef = useRef(null);
+  const startingRef = useRef(null);
   const isMountedRef = useRef(true);
   const scanningGuardRef = useRef(false);
 
@@ -32,12 +33,14 @@ const ScannerPage = ({ token, onLogout }) => {
     await stopScanner();
     const html5QrCode = new Html5Qrcode(containerId);
     html5QrCodeRef.current = html5QrCode;
-    try {
+    const starting = (async () => {
       const cameras = await Html5Qrcode.getCameras();
       if (!cameras || cameras.length === 0) {
         setScanError("No camera found on this device.");
         return;
       }
+      // Scanner was stopped (e.g. user left the page) while we were waiting for the camera list
+      if (html5QrCodeRef.current !== html5QrCode) return;
       let cameraId = cameras[1]?.id || cameras[0].id;
       await html5QrCode.start(
         { deviceId: { exact: cameraId } },
@@ -60,7 +63,12 @@ const ScannerPage = ({ token, onLogout }) => {
         },
         () => {}
       );
+    })();
+    startingRef.current = starting;
+    try {
+      await starting;
     } catch (error) {
+      if (html5QrCodeRef.current !== html5QrCode) return;
       console.error("Error starting QR scanner:", error);
       setScanError("Camera initialization failed. Check permissions.");
     }
@@ -69,13 +77,16 @@ const ScannerPage = ({ token, onLogout }) => {
   const stopScanner = async () => {
     const scanner = html5QrCodeRef.current;
     if (!scanner) return;
+    html5QrCodeRef.current = null;
+    // stop() throws while the camera is still starting, so let the start finish first;
+    // otherwise the camera turns on after we've dropped the scanner and never turns off.
+    await startingRef.current?.catch(() => {});
     try {
       await scanner.stop();
     } catch {}
     try {
       scanner.clear();
     } catch {}
-    html5QrCodeRef.current = null;
   };
 
   const handleScan = async (qrCodeId) => {
@@ -114,8 +125,9 @@ const ScannerPage = ({ token, onLogout }) => {
     await startScanner();
   };
 
-  const safeNavigate = async (path) => {
-    await stopScanner();
+  // Camera release runs in the background (it may have to wait for a start in progress)
+  const safeNavigate = (path) => {
+    stopScanner();
     navigate(path);
   };
 
@@ -124,8 +136,8 @@ const ScannerPage = ({ token, onLogout }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header
-        onLogout={async () => {
-          await stopScanner();
+        onLogout={() => {
+          stopScanner();
           onLogout();
         }}
       />
@@ -134,8 +146,8 @@ const ScannerPage = ({ token, onLogout }) => {
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-xl font-bold text-gray-800">Scan QR Code</h1>
             <button
-              onClick={async () => {
-                await stopScanner();
+              onClick={() => {
+                stopScanner();
                 onLogout();
               }}
               className="px-3 py-1 text-sm font-medium text-teal-600 bg-teal-100 rounded-md hover:bg-teal-200 cursor-pointer"
